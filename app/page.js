@@ -1,5 +1,6 @@
 
 import Header from './components/header';
+import GetCoins from './components/getCoins';
 
 export default function Home() {
   return (
@@ -13,9 +14,8 @@ export default function Home() {
             <p>Explore our features and start your crypto journey today!</p>
           </aside>
         </main>
-
       </div>
+      <GetCoins />
     </>
-    
   );
 }
