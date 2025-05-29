@@ -1,6 +1,7 @@
 
 import Header from './components/header';
 import GetCoins from './components/getCoins';
+import Money from './components/money';
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
           </aside>
         </main>
       </div>
+      <Money />
       <GetCoins />
     </>
   );
