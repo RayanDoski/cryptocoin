@@ -1,23 +1,26 @@
-// app/api/coins/route.js
 import { NextResponse } from 'next/server';
 
+// GET function eftersom vi hämtar något med en request vilket är Länken med parametrar
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
+    const symbols = searchParams.get('symbols');
 
-    const url = new URL('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest');
+    if (!symbols) {
+      return NextResponse.json(
+        { error: "You Must Have The 'symbols' parameter!" },
+        { status: 400 }
+      );
+    }
 
-    // Endast dessa parametrar får änvändas i listings/latest
-    const defaults = { start: '1', limit: '10', convert: 'USD' };
+    const url = new URL('https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest'); 
+    url.searchParams.set('symbol', symbols);
+    url.searchParams.set('convert', 'USD');
 
-    ['start', 'limit', 'convert'].forEach((p) => {
-      url.searchParams.set(p, searchParams.get(p) || defaults[p]);
-    });
-
-    const cmcRes = await fetch(url, {
+    const cmcRes = await fetch(url.toString(), {
       headers: {
         'X-CMC_PRO_API_KEY': "b522693a-f6fa-4fb1-a297-7870c03de7b5",
-        Accept: 'application/json',
+        'Accept': 'application/json',
       }
     });
 
@@ -31,9 +34,8 @@ export async function GET(request) {
     return NextResponse.json(cmcJson, {
       headers: { 'Cache-Control': 'public, max-age=60' }
     });
-
   } catch (err) {
-    console.error('[coins/route] unexpected error', err);
+    console.error('[getOneCoinValue] unexpected error', err);
     return NextResponse.json(
       // om err faktiskt är ett error object så visas det annars så har vi alternativet "Unknown error"
       { error: err instanceof Error ? err.message : 'Unknown error' },

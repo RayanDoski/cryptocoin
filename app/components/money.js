@@ -6,6 +6,7 @@ function money() {
     const [amount, setAmount] = useState("");
     const [total, setTotal] = useState(0);
 
+    // Lägg till pengarna
     const handleAdd = () => {
         let amountTotal = Number(total) + Number(amount)
         storeAmount(amountTotal)
@@ -13,11 +14,12 @@ function money() {
         setAmount("");
     };
 
+    // spara i local storage
     const storeAmount = (total) => {
-        console.log(total);
         localStorage.setItem('Amount', total);
     }
 
+    // När programmet startar hämtar vi de sparade pengarna
     useEffect(() => {
         const storedAmount = localStorage.getItem('Amount');
         if (storedAmount) {
