@@ -19,7 +19,7 @@ export async function GET(request) {
 
     const cmcRes = await fetch(url.toString(), {
       headers: {
-        'X-CMC_PRO_API_KEY': "b522693a-f6fa-4fb1-a297-7870c03de7b5",
+        'X-CMC_PRO_API_KEY': process.env.API_KEY,
         'Accept': 'application/json',
       }
     });
