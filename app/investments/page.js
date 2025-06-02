@@ -1,6 +1,7 @@
 'use client';
 import Header from '@/app/components/header';
 import { useEffect, useState } from 'react';
+import Spinner from '../components/spinner/spinner';
 
 export default function Investments() {
   const [coinData, setCoinData] = useState({});
@@ -56,7 +57,6 @@ export default function Investments() {
     fetchInvestmentsAndCoins();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   const investments = JSON.parse(localStorage.getItem('Investments') || '[]');
@@ -80,12 +80,17 @@ export default function Investments() {
     currentBalance += parseFloat(sellValue);
     localStorage.setItem('Amount', currentBalance.toFixed(2));
 
-    window.location.reload();
+    setLoading(true);
+
+    setTimeout(() => {
+        location.reload();
+    }, 3000);
   };
 
 
   return (
     <>
+      {loading && <Spinner />}
       <Header />
       <section>
         <ul className='px-2.5 py-5 sm:pt-15 space-y-10 max-w-6xl mx-auto'>
