@@ -7,31 +7,42 @@ export default function Investments() {
   const [coinData, setCoinData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // State for available balance, initialized to 0
+  const [availableBalance, setAvailableBalance] = useState(0);
+  const [investments, setInvestments] = useState([]);
 
   // Load user data from localStorage
   useEffect(() => {
     const fetchInvestmentsAndCoins = async () => {
       try {
-        const investmentsRaw = localStorage.getItem('Investments');
-        const investments = investmentsRaw ? JSON.parse(investmentsRaw) : [];
-
-        // Om de inte har några investeringar
-        if (!investments.length) {
+        // Only access localStorage on the client side
+        if (typeof window === 'undefined') {
           setLoading(false);
           return;
         }
 
-        // Hämta alla symboler in i en lista
-        const uniqueSymbols = [...new Set(investments.map(inv => inv.coinSymbol))];
+        const investmentsRaw = localStorage.getItem('Investments');
+        const loadedInvestments = investmentsRaw ? JSON.parse(investmentsRaw) : [];
+        setInvestments(loadedInvestments); // Set investments state
+
+        const balanceRaw = localStorage.getItem('Amount');
+        setAvailableBalance(Number(balanceRaw) || 0); // Set available balance state
+
+        // If no investments, stop loading
+        if (!loadedInvestments.length) {
+          setLoading(false);
+          return;
+        }
+
+        // Get unique symbols from investments
+        const uniqueSymbols = [...new Set(loadedInvestments.map(inv => inv.coinSymbol))];
 
         const requests = uniqueSymbols.map(symbol =>
           fetch(`/api/coins/getOneCoinValue?&symbols=${symbol}`)
         );
-        
-        // Väntar in svar från flera fetch
+
         const responses = await Promise.all(requests);
-        
-        // Loopa igenom alla respones för att se om vi fått error och ge tillbaka responses i json format
+
         const dataResponses = await Promise.all(
           responses.map(async res => {
             if (!res.ok) throw new Error('Failed to fetch coin data');
@@ -41,8 +52,8 @@ export default function Investments() {
 
         const allCoinData = {};
         dataResponses.forEach(data => {
-          const symbol = Object.keys(data.data)[0]; // Hämtar in symbolen
-          allCoinData[symbol] = data.data[symbol][0]; // Hämta all info om den specifika coinen
+          const symbol = Object.keys(data.data)[0];
+          allCoinData[symbol] = data.data[symbol][0];
         });
 
         setCoinData(allCoinData);
@@ -55,35 +66,42 @@ export default function Investments() {
     };
 
     fetchInvestmentsAndCoins();
-  }, []);
+  }, []); // Empty dependency array means this runs once on mount
 
   if (error) return <p>Error: {error}</p>;
 
-  const investments = JSON.parse(localStorage.getItem('Investments') || '[]');
-
   const handleSell = (investment, index) => {
+    // Ensure all browser APIs are accessed on the client
+    if (typeof window === 'undefined') return;
+
     const coinSymbol = investment.coinSymbol;
     const amountToSell = investment.coinsBought;
     const sellValue = (coinData[coinSymbol]?.quote?.USD?.price * amountToSell).toFixed(2);
 
+    // Use window.confirm for client-side interaction
     const confirmSell = window.confirm(
       `Are you sure you want to sell ${amountToSell} ${coinSymbol} for $${sellValue}?`
     );
 
     if (!confirmSell) return;
 
-    let investments = JSON.parse(localStorage.getItem('Investments')) || [];
-    investments.splice(index, 1);
-    localStorage.setItem('Investments', JSON.stringify(investments));
+    // Update investments in state and localStorage
+    const updatedInvestments = [...investments];
+    updatedInvestments.splice(index, 1);
+    localStorage.setItem('Investments', JSON.stringify(updatedInvestments));
+    setInvestments(updatedInvestments); // Update state
 
-    let currentBalance = parseFloat(localStorage.getItem('Amount') || 0);
+    // Update balance in state and localStorage
+    let currentBalance = parseFloat(localStorage.getItem('Amount') || '0');
     currentBalance += parseFloat(sellValue);
     localStorage.setItem('Amount', currentBalance.toFixed(2));
+    setAvailableBalance(currentBalance); // Update state
 
     setLoading(true);
 
+    // Reload the page on the client
     setTimeout(() => {
-        location.reload();
+      window.location.reload();
     }, 3000);
   };
 
@@ -97,7 +115,8 @@ export default function Investments() {
           <aside>
             <h1 className='text-2xl ms:text-3xl md:text-4xl lg:text-5xl font-bold'>Your Investments</h1>
             <h2 className='text-[14px] sm:text-[16px] lg:text-[18px] ml-2'>
-              <span className='font-bold text-black'>Available Balance:</span> {localStorage.getItem('Amount') || 0}$
+              {/* Use state for available balance */}
+              <span className='font-bold text-black'>Available Balance:</span> {availableBalance}$
             </h2>
           </aside>
 
@@ -117,12 +136,12 @@ export default function Investments() {
                   <p><span className='font-bold text-black'>Total Value:</span> ${totalValue}</p>
                   {(() => {
                     const amountInvested = investment.amountInvested || 0;
-                    const totalValue = coin && investment.coinsBought
-                      ? (coin.quote.USD.price * investment.coinsBought).toFixed(2)
+                    const totalValueNum = coin && investment.coinsBought
+                      ? (coin.quote.USD.price * investment.coinsBought)
                       : 0;
 
                     const percentageChange = amountInvested > 0
-                      ? ((totalValue - amountInvested) / amountInvested) * 100
+                      ? ((totalValueNum - amountInvested) / amountInvested) * 100
                       : 0;
 
                     const isPositive = percentageChange >= 0;

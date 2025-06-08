@@ -1,41 +1,59 @@
 'use client'
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react'; // Import useEffect
 import MessagePopup from './messagePopup';
 import Spinner from '../spinner/spinner';
 
-function investPopup({ coin, onClose }) {
+function InvestPopup({ coin, onClose }) { // Renamed to PascalCase for convention
 
     const [amount, setAmount] = useState("");
-
-    // för att visa error messages
-    const [showErrorPopup, setShowErrorPopup] = useState(false)
-
-    // visa spinner
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [showProcessingSpinner, setShowProcessingSpinner] = useState(false);
+    // State to store the user's current balance from localStorage
+    const [userBalance, setUserBalance] = useState(0);
+    // State to store existing investments from localStorage
+    const [existingInvestments, setExistingInvestments] = useState([]);
+
+    // Load initial data from localStorage when the component mounts
+    useEffect(() => {
+        if (typeof window !== 'undefined') { // Ensure code runs only in the browser
+            const storedAmount = localStorage.getItem('Amount');
+            if (storedAmount) {
+                setUserBalance(Number(storedAmount));
+            }
+
+            const storedInvestments = localStorage.getItem('Investments');
+            if (storedInvestments) {
+                try {
+                    setExistingInvestments(JSON.parse(storedInvestments));
+                } catch (e) {
+                    console.error("Error parsing investments from localStorage:", e);
+                    setExistingInvestments([]); // Reset if parsing fails
+                }
+            }
+        }
+    }, []); // Empty dependency array ensures this runs once after initial render
 
     const handleInvest = (e) => {
         e.preventDefault();
 
-        // visa spinner
         setShowProcessingSpinner(true);
 
-        // Användarens pengar från localStorage
-        let storedAmount = localStorage.getItem('Amount');
-
-        if (Number(amount) <= 0 || Number(amount) > storedAmount) {
-            setShowErrorPopup(!showErrorPopup)
+        // Use the userBalance state, which is populated from localStorage on mount
+        if (Number(amount) <= 0 || Number(amount) > userBalance) {
+            setShowErrorPopup(true); // Set to true to show the error popup
             setShowProcessingSpinner(false);
-            return
+            return;
         } else {
             console.log(`Investing $${amount} in ${coin.name}`);
-            const updatedAmount = storedAmount - amount;
-            localStorage.setItem('Amount', updatedAmount);
+            const updatedAmount = userBalance - Number(amount); // Use userBalance state
+            if (typeof window !== 'undefined') { // Ensure localStorage write is client-side
+                localStorage.setItem('Amount', updatedAmount.toString()); // localStorage stores strings
+            }
+            setUserBalance(updatedAmount); // Update state immediately
 
-            // hur många coins som köps
             const coinsBought = Number(amount) / coin.quote?.USD?.price;
 
-            let investment = {
+            let newInvestment = {
                 coinId: coin.id,
                 coinName: coin.name,
                 coinCurrentPrice: coin.quote?.USD?.price?.toFixed(2) || ":)",
@@ -45,28 +63,26 @@ function investPopup({ coin, onClose }) {
                 dateInvested: new Date().toISOString()
             };
 
-            // hämta existernade investeringar
-            let existingInvestments = 0
-            if (JSON.parse(localStorage.getItem('Investments'))) {
-                existingInvestments = JSON.parse(localStorage.getItem('Investments'));
-            } else {
-                existingInvestments = [];
+            // Update existing investments state and localStorage
+            const updatedInvestments = [...existingInvestments, newInvestment];
+            if (typeof window !== 'undefined') { // Ensure localStorage write is client-side
+                localStorage.setItem('Investments', JSON.stringify(updatedInvestments));
             }
+            setExistingInvestments(updatedInvestments); // Update state immediately
 
-            existingInvestments.push(investment);
-            localStorage.setItem('Investments', JSON.stringify(existingInvestments));
-
-            // Reload after 3 seconds
-            setTimeout(() => {
-                location.reload();
-            }, 3000);
+            // Reload after 3 seconds, ensuring window.location is accessed client-side
+            if (typeof window !== 'undefined') {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+            }
         }
         setAmount("");
     }
 
     return (
         <>
-            {showErrorPopup && <MessagePopup message={"Du Har Inte TILLRÄKLIGT MED PENGAR!!!"} onClose={setShowErrorPopup} />}
+            {showErrorPopup && <MessagePopup message={"Du Har Inte TILLRÄKLIGT MED PENGAR!!!"} onClose={() => setShowErrorPopup(false)} />}
             {showProcessingSpinner && <Spinner />}
             <section className="fixed z-10 w-full h-full top-0 left-0 bg-gray-800/75 flex items-center justify-center animate-fade-in">
                 <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full animate-scale-up">
@@ -107,4 +123,4 @@ function investPopup({ coin, onClose }) {
     )
 }
 
-export default investPopup
+export default InvestPopup
