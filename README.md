@@ -1,18 +1,42 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## Kom igång
 
-First, run the development server:
+För att komma igång med projektet behöver du Node.js och npm installerat på din dator. Projektet använder sig av Next.js och React.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Installation
+
+1.  **Klona repot:**
+    Börja med att klona ner projektet till din lokala maskin:
+
+    ```bash
+    git clone https://github.com/RayanDoski/cryptocoin.git
+    cd cryptocoin
+    ```
+
+2.  **Installera beroenden:**
+    Installera sedan alla nödvändiga beroenden genom att köra:
+
+    ```bash
+    npm install
+    ```
+
+3.  **Konfigurera API-nyckel (Miljövariabler):**
+    Detta projekt använder sig av API-nycklar som lagras säkert med hjälp av miljövariabler. Du behöver skapa en fil som heter `.env.local` i projektets rotkatalog. Denna fil kommer **inte** att inkluderas när du pushar din kod till ett offentligt repository, vilket håller dina känsliga nycklar säkra.
+
+    I din `.env.local`-fil, lägg till din API-nyckel på följande format:
+
+    ```
+    API_KEY=CCKEY
+    ```
+    Ersätt `CCKEY` med API-nyckel. Next.js laddar automatiskt miljövariabler från `.env.local` när applikationen startas.
+
+### Kör utvecklingsservern
+    När installationen är klar kan du starta utvecklingsservern:
+
+    ```bash
+    npm run dev
+    ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -51,3 +75,8 @@ Vid jämförelse med andra moderna ramverk som Vue.js och Angular, som båda erb
 
 Källor:
 [1] K. Samson, "7 Reasons Why React is King of JavaScript UI Frameworks," dev.to , 10-Jul-2022. [Online]. Available: https://dev.to/kalashin1/7-reasons-why-react-is-king-of-javascript-ui-frameworks-1j76 . [Accessed: 02-june-2025].
+
+
+### Dataflöde
+
+[Komponentdiagram som visar props-flöde](public/DataFlow/diagram.png)
