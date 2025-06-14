@@ -59,13 +59,13 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-Projekt Beskrivning:
+## Projekt Beskrivning:
 
 I vårt projektarbete har vi utvecklat en webbapplikation som kombinerar finansiell simulering med modern teknikstack. Webbappen låter användare "ladda" sitt konto med falska pengar och investera i riktiga kryptovalutor, men med virtuella medel. Detta gör att man kan testa olika investeringsstrategier och se hur värdet förändras över tid, vilket fungerar som ett pedagogiskt verktyg för att lära sig om kryptomarknaden.
 
 Applikationen är byggd med Next.js, React och Tailwind CSS. Vi använde localStorage för att spara användardata lokalt i webbläsaren, vilket gör att användare kan återvända till sina investeringar utan att behöva logga in.
 
-Jämförelse mot andra ramverk/biblotek:
+## Jämförelse mot andra ramverk/biblotek:
 
 När det gäller valet av teknikstack för utveckling av frontend-applikationer har React blivit en dominerande kraft inom JavaScript-ekosystemet. Enligt en artikel publicerad på Dev.to, är React fortfarande det bästa JavaScript-ramverket för frontend-utveckling tack vare dess många inbyggda verktyg och användarvänlighet [1]. Detta styrks av att React har växt till att bli det mest använda JavaScript-ramverket sedan dess lansering 2013 [1].
 
@@ -73,7 +73,7 @@ Jämfört med vanilla JavaScript, som erbjuder full kontroll men saknar struktur
 
 Vid jämförelse med andra moderna ramverk som Vue.js och Angular, som båda erbjuder reaktivitet som standard, visar sig React ha ett större ekosystem och starkare community [1]. Även om dessa konkurrerande ramverk kan erbjuda vissa funktioner som är inbyggda, som exempelvis statshantering, ger React utvecklaren större flexibilitet att bygga efter egna behov. Utöver detta har React en liten inlärningskurva för JavaScript-utvecklare, vilket gör det tillgängligt även för nybörjare samtidigt som det är tillräckligt kraftfullt för professionella utvecklare [1].
 
-Källor:
+## Källor:
 [1] K. Samson, "7 Reasons Why React is King of JavaScript UI Frameworks," dev.to , 10-Jul-2022. [Online]. Available: https://dev.to/kalashin1/7-reasons-why-react-is-king-of-javascript-ui-frameworks-1j76 . [Accessed: 02-june-2025].
 
 
