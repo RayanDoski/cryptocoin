@@ -84,35 +84,41 @@ function InvestPopup({ coin, onClose }) { // Renamed to PascalCase for conventio
         <>
             {showErrorPopup && <MessagePopup message={"Du Har Inte TILLRÄKLIGT MED PENGAR!!!"} onClose={() => setShowErrorPopup(false)} />}
             {showProcessingSpinner && <Spinner />}
-            <section className="fixed z-10 w-full h-full top-0 left-0 bg-gray-800/75 flex items-center justify-center animate-fade-in">
-                <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full animate-scale-up">
-                    <aside className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-bold">Invest in {coin.name}</h2>
-                        <h2 onClick={onClose} className=" cursor-pointer font-bold text-2xl p-2.5">X</h2>
+            <section className="fixed z-5 inset-0 bg-black/75 flex items-center justify-center backdrop-blur-sm animate-fade-in">
+                <div className="bg-gray-900 rounded-xl shadow-2xl p-8 max-w-lg w-full border border-gray-700 animate-scale-up-smooth">
+                    <aside className="flex justify-between items-center mb-6">
+                        <h2 className="text-3xl font-extrabold text-white">Invest in {coin.name}</h2>
+                        <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors duration-200 focus:outline-none p-2 rounded-full hover:bg-gray-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </aside>
 
                     {/* for the specifik coin */}
-                    <div key={coin.id} className="coin-card p-4 bg-white rounded-lg border-1 border-gray-300 my-7.5">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">{coin.name} <span className="text-gray-500">({coin.symbol})</span></h3>
-                        <p className="text-sm text-gray-600 mb-1">Rank: <span className="font-medium">#{coin.cmc_rank}</span></p>
-                        <p className="text-sm text-gray-600 mb-1">Price: <span className="font-medium">${coin.quote?.USD?.price?.toFixed(2) || 'N/A'}</span></p>
-                        <p className={`text-sm mb-1 ${coin.quote?.USD?.percent_change_24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <div key={coin.id} className="p-5 bg-gray-800 rounded-lg border border-gray-700 mb-6 transition-transform duration-200 hover:scale-[1.01]">
+                        <h3 className="text-xl font-semibold text-white mb-2 flex items-center">
+                            {coin.name} <span className="text-gray-400 ml-2">({coin.symbol})</span>
+                        </h3>
+                        <p className="text-sm text-gray-400 mb-1">Rank: <span className="font-medium text-gray-300">#{coin.cmc_rank}</span></p>
+                        <p className="text-sm text-gray-400 mb-1">Price: <span className="font-medium text-white">${coin.quote?.USD?.price?.toFixed(2) || 'N/A'}</span></p>
+                        <p className={`text-sm mb-1 ${coin.quote?.USD?.percent_change_24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                             24h Change: <span className="font-medium">{coin.quote?.USD?.percent_change_24h?.toFixed(2) || 'N/A'}%</span>
                         </p>
-                        <p className="text-sm text-gray-600">Market Cap: <span className="font-medium">${(coin.quote?.USD?.market_cap / 1000000000)?.toFixed(2) || 'N/A'}B</span></p>
+                        <p className="text-sm text-gray-400">Market Cap: <span className="font-medium text-gray-300">${(coin.quote?.USD?.market_cap / 1000000000)?.toFixed(2) || 'N/A'}B</span></p>
                     </div>
 
-                    <form className="space-y-4" onSubmit={handleInvest}>
+                    <form className="space-y-5" onSubmit={handleInvest}>
                         <input
                             type="number"
                             placeholder="Investment Amount (USD)"
-                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200"
                             onChange={(e) => setAmount(Number(e.target.value))}
                             value={amount}
                         />
                         <button
                             type="submit"
-                            className="w-full text-white py-3 rounded-md bg-gradient-to-r from-purple-600 via-pink-500 to-amber-400 animate-gradient bg-[length:200%_200%]"
+                            className="w-full py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold text-lg shadow-lg hover:from-purple-700 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 transition-all duration-300 transform hover:-translate-y-0.5"
                         >
                             Invest Now
                         </button>

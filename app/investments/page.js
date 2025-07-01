@@ -110,60 +110,68 @@ export default function Investments() {
     <>
       {loading && <Spinner />}
       <Header />
-      <section>
-        <ul className='px-2.5 py-5 sm:pt-15 space-y-10 max-w-6xl mx-auto'>
-          <aside>
-            <h1 className='text-2xl ms:text-3xl md:text-4xl lg:text-5xl font-bold'>Your Investments</h1>
-            <h2 className='text-[14px] sm:text-[16px] lg:text-[18px] ml-2'>
-              {/* Use state for available balance */}
-              <span className='font-bold text-black'>Available Balance:</span> {availableBalance}$
+      <section className="min-h-screen relative py-10 px-4 sm:px-6 lg:px-8 overflow-hidden bg-white">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:linear-gradient(to_bottom,white,rgba(255,255,255,0.1))]"></div>
+
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="mb-10 text-center md:text-left">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">Your Investments</h1>
+            <h2 className="text-base sm:text-lg lg:text-xl text-gray-700 ml-0 md:ml-2">
+              <span className='font-bold text-gray-800'>Available Balance:</span> <span className="text-gray-900">${availableBalance.toFixed(2)}</span>
             </h2>
-          </aside>
+          </div>
 
           {investments.length > 0 ? (
-            investments.map((investment, index) => {
-              const coin = coinData[investment.coinSymbol];
-              const price = coin?.quote?.USD?.price?.toFixed(2) || 'N/A';
-              const totalValue = coin && investment.coinsBought
-                ? (coin.quote.USD.price * investment.coinsBought).toFixed(2)
-                : 'N/A';
+            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {investments.map((investment, index) => {
+                const coin = coinData[investment.coinSymbol];
+                const price = coin?.quote?.USD?.price?.toFixed(2) || 'N/A';
+                const totalValue = coin && investment.coinsBought
+                  ? (coin.quote.USD.price * investment.coinsBought).toFixed(2)
+                  : 'N/A';
 
-              return (
-                <li key={index} className="w-full py-5 px-10 border border-gray-300 rounded-md shadow-xl text-gray-600 space-y-1 text-sm sm:text-base md:text-lg lg:text-xl">
-                  <h2 className='text-lg sm:text-2xl md:text-3xl font-bold mb-2'>{investment.coinName}</h2>
-                  <p><span className='font-bold text-black'>Current Value:</span> ${price}</p>
-                  <p><span className='font-bold text-black'>Amount Of Coins:</span> {investment.coinsBought}</p>
-                  <p><span className='font-bold text-black'>Total Value:</span> ${totalValue}</p>
-                  {(() => {
-                    const amountInvested = investment.amountInvested || 0;
-                    const totalValueNum = coin && investment.coinsBought
-                      ? (coin.quote.USD.price * investment.coinsBought)
-                      : 0;
+                const amountInvested = investment.amountInvested || 0;
+                const totalValueNum = coin && investment.coinsBought
+                  ? (coin.quote.USD.price * investment.coinsBought)
+                  : 0;
 
-                    const percentageChange = amountInvested > 0
-                      ? ((totalValueNum - amountInvested) / amountInvested) * 100
-                      : 0;
+                const percentageChange = amountInvested > 0
+                  ? ((totalValueNum - amountInvested) / amountInvested) * 100
+                  : 0;
 
-                    const isPositive = percentageChange >= 0;
+                const isPositive = percentageChange >= 0;
 
-                    return (
-                      <p>
-                        <span className='font-bold text-black'>Percentage Change:</span>{' '}
+                return (
+                  <li key={index} className="bg-gray-100 rounded-xl shadow-lg border border-gray-700 p-6 flex flex-col justify-between transition-transform duration-300 hover:scale-[1.02] hover:shadow-xl">
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{investment.coinName} <span className="text-gray-500 text-base">({investment.coinSymbol})</span></h2>
+                      <p className="text-sm sm:text-base text-gray-700 mb-1"><span className='font-semibold text-gray-800'>Current Price:</span> <span className="text-gray-900">${price}</span></p>
+                      <p className="text-sm sm:text-base text-gray-700 mb-1"><span className='font-semibold text-gray-800'>Amount of Coins:</span> <span className="text-gray-900">{investment.coinsBought}</span></p>
+                      <p className="text-sm sm:text-base text-gray-700 mb-1"><span className='font-semibold text-gray-800'>Total Value:</span> <span className="text-gray-900">${totalValue}</span></p>
+                      <p className="text-sm sm:text-base mb-4">
+                        <span className='font-semibold text-gray-800'>P&L Change:</span>{' '}
                         <span className={isPositive ? 'text-green-600' : 'text-red-600'}>
                           {isPositive ? '+' : ''}
                           {percentageChange.toFixed(2)}%
                         </span>
                       </p>
-                    );
-                  })()}
-                  <button className='px-5 py-1 bg-red-600 rounded-md shadow-md text-white mt-2.5' onClick={() => handleSell(investment, index)}>Sell</button>
-                </li>
-              );
-            })
+                    </div>
+                    <button
+                      className="mt-4 w-full py-2.5 px-5 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 transition-all duration-300 transform hover:-translate-y-0.5"
+                      onClick={() => handleSell(investment, index)}
+                    >
+                      Sell
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
           ) : (
-            <li>No investments found.</li>
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 text-center">
+              <p className="text-lg text-gray-700">No investments found. Start investing today!</p>
+            </div>
           )}
-        </ul>
+        </div>
       </section>
     </>
   );
